@@ -2,8 +2,8 @@ const Event = require('../models/Events');
 
 module.exports = {
   addEvent: async (req, res) => {
-    const data = req.body;
-    const dateStart = new Date(data.start);
+
+
     dateStart.setTime(
       dateStart.getTime() - new Date().getTimezoneOffset() * 60 * 1000,
     );
@@ -15,7 +15,6 @@ module.exports = {
     );
 
     data.end = dateEnd;
-    console.log('data', data);
     const existingEvent = await Event.findOne({
       $and: [
         {
@@ -23,12 +22,12 @@ module.exports = {
           'location.latLng.lat': data.location.latLng.lat,
         },
         {
-          $and: [{ start: { $gte: data.start } }, { end: { $lte: data.end } }],
+          [{ start: { $gte: data.start } }, { end: { $lte: data.end } }],
         },
       ],
     });
 
-    console.log('exisitng', existingEvent);
+
 
     if (existingEvent) {
       res.status(500).json({
@@ -36,7 +35,7 @@ module.exports = {
         message: 'An Event already exist at this venue on this day',
       });
     } else {
-      Event.create(data)
+      Event.make(data)
         .then((event) => {
           res.status(200).json({
             success: true,
@@ -52,8 +51,8 @@ module.exports = {
         });
     }
   },
-  getEvents: (req, res) => {
-    Event.find({})
+  getAllEvents: (req, res) => {
+    Event.see({})
       .then((events) => {
         res.json({ success: true, events });
       })
