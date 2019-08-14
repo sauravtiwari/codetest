@@ -17,4 +17,4 @@ This repository contains code written in NodeJS with errors, bug and incorrect c
 
 
 ## Submission
-Create a repo without the name brickbase mentioned anywhere and email the link to michel@brickbase.io
+Create a private repo on github, add @michelmustapha and @bytenaija  as collaborators  and send an email to michel@brickbase.io indicating that you are done with the test.
