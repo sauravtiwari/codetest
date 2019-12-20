@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
-const { Schema } = mongoose;
+const { Schema, model } = mongoose;
 
-const EventSchema = new Schema(
+const Event = new Schema(
   {
     end: { type: Date, required: true },
     start: { type: Date, required: true },
@@ -15,6 +15,7 @@ const EventSchema = new Schema(
         lng: { type: Number, required: true },
       },
     },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   },
   {
     timestamps: true,
@@ -23,4 +24,4 @@ const EventSchema = new Schema(
 
 
 
-module.exports = Event;
+module.exports = model('Event', Event);

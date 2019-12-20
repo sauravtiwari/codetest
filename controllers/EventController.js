@@ -1,9 +1,25 @@
 const Event = require('../models/Events');
+const User = require('../models/User');
 
 module.exports = {
-  addEvent: async (req, res) => {
+  addJobsEvent: async (req, res) => {
+    const data = req.body;
+    if (!data || !data.start || !data.end || !data.location || !data.user) {
+      return res.status(500).json({
+        success: false,
+        message: 'Invalid Parameters',
+      });
+    }
 
+    data.user = await User.findOne({ name: data.user });
+    if (!data.user) {
+      return res.status(500).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
 
+    const dateStart = new Date(data.start);
     dateStart.setTime(
       dateStart.getTime() - new Date().getTimezoneOffset() * 60 * 1000,
     );
@@ -15,27 +31,24 @@ module.exports = {
     );
 
     data.end = dateEnd;
-    const existingEvent = await Event.findOne({
+
+    const existingEvent = await Event.countDocuments({
       $and: [
         {
           'location.latLng.lng': data.location.latLng.lng,
           'location.latLng.lat': data.location.latLng.lat,
         },
-        {
-          [{ start: { $gte: data.start } }, { end: { $lte: data.end } }],
-        },
+        { start: { $gte: data.start } },
+        { end: { $lte: data.end } },
       ],
     });
-
-
-
     if (existingEvent) {
       res.status(500).json({
         success: false,
-        message: 'An Event already exist at this venue on this day',
+        message: 'An Event already exists at this venue on this day',
       });
     } else {
-      Event.make(data)
+      Event.create(data)
         .then((event) => {
           res.status(200).json({
             success: true,
@@ -51,8 +64,9 @@ module.exports = {
         });
     }
   },
-  getAllEvents: (req, res) => {
-    Event.see({})
+  
+  getAllEvents: async (req, res) => {
+    Event.find({})
       .then((events) => {
         res.json({ success: true, events });
       })
